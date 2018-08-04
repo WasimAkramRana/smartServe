@@ -48,4 +48,4 @@ app.use('/',    require('./routes/users.js')); //Call all user API routes
 * Application running on given port
 **/
 app.listen(configs.appPort);
-logger.info('SmartServe API server is runnning at ' + configs.appPort);
+console.log('SmartServe API server is runnning at ' + configs.appPort);

@@ -1,8 +1,8 @@
 const jwt             = require('jsonwebtoken');
-var paramsValidator   = require('../configs/parameters');
+var paramsValidator   = require('../config/params');
 var yaml              = require('js-yaml');
 var fs                = require('fs');
-var validationPattern = yaml.safeLoad(fs.readFileSync('./configs/validationPattern.yml'));
+var validationPattern = yaml.safeLoad(fs.readFileSync('./config/validationPattern.yml'));
 
 /**
 * This function is usae for to authenticate api end points and validate access token for resource access

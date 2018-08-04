@@ -1,7 +1,8 @@
 var crypto          = require('crypto');
 var async           = require('async');
-var usersModel      = require('../models/usersModel.js');
-var globalServices  = require('../services/globalServices');
+var userModel      = require('../models/usersModel.js');
+var globalServices  = require('../services/globalService');
+var usersModel       = new userModel(); 
 
 /**
 * This function is use for user registration process
