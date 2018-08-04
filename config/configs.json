@@ -1,0 +1,16 @@
+{
+  "appName"    : "SmartServe",
+  "logsPath"   : "/smartServe/SmartServe.log",
+  "dbURI"      : "mongodb://localhost/devDB",
+  "accessToken" : "CKLTKNUYRJXHZYPFXWWXJMQ3FURN6MET",
+  "secretKey"   : "R2VBRK3JC7QOB4CL6B5VN5532UR7LZXE",
+  "baseURL"     : "localhost:3090",
+  "dbURI"       : "mongodb://localhost:27017/TakedaTry",
+  "appPort"     : 3090,
+  "emailConfig" : {
+    "username"   : "alphatest009@gmail.com",
+    "password"   : "@123Welcome",
+    "smtpServer" : "smtp.gmail.com",
+    "smtpPort"   : 465
+  },
+}

@@ -1,0 +1,46 @@
+{
+  "params" : {
+    "signup" : {
+      "title" : "User signup module parameters",
+      "fields": [
+        {
+          "name"      : "firstName",
+          "type"      : "text",
+          "required"  : true
+        },
+        {
+          "name"      : "lastName",
+          "type"      : "text",
+          "required"  : true
+        },
+        {
+          "name"      : "password",
+          "type"      : "password",
+          "required"  : true
+        },
+        {
+          "name"      : "phone",
+          "type"      : "phone",
+          "required"  : true
+        }
+      ]
+    },
+
+    "login" : {
+      "title" : "User login module parameters",
+      "fields": [
+        {
+          "name"      : "password",
+          "type"      : "password",
+          "required"  : true
+        },
+        {
+          "name"      : "phone",
+          "type"      : "phone",
+          "required"  : true
+        }
+      ]
+    }
+
+  }
+}
