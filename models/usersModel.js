@@ -59,5 +59,5 @@ userSchema.methods.getUserDetails = function(phone, req, res, next) {
   });
 };
 
-let users        = dbConnection.takedaTryDB.model('users', userSchema);
+let users        = dbConnection.smartServeDB.model('users', userSchema);
 module.exports   = users;

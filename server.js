@@ -42,7 +42,13 @@ app.use(function(err, req, res, next) {
 /**
 * These middlewares is use for define module wise rounting
 */
-app.use('/',    require('./routes/users.js')); //Call all user API routes
+
+app.get("/",function(req,res,next){
+  res.send("Server is running");
+});
+
+app.use('/restaurant',   require('./routes/restaurant.js')); //Call all user API routes
+app.use('/',             require('./routes/users.js')); //Call all user API routes
 
 /**
 * Application running on given port
