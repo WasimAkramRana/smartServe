@@ -1,4 +1,5 @@
 var async               =   require('async');
+var globalServices      =   require('../services/globalService');
 var restaurantModel     =   require('../models/restaurantModel');
 var restaurants         =   new restaurantModel();
 
@@ -6,7 +7,10 @@ module.exports = {
     'getAll': function(req,res,next){
         async.series([
             function(next) {
-            restaurants.getAll(req,res,next);
+                globalServices.validateAccessToken(req, res, next); //Validate access token
+            },
+            function(next){
+                restaurants.getAll(req,res,next);
             }
         ],function(err, results) {
             if(err)

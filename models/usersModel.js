@@ -2,12 +2,16 @@ var crypto = require('crypto');
 var dbConnection = require('./dbConnection');
 
 var userSchema = dbConnection.Schema({
-    firstName: String,
-    lastName: String,
-    phone: String,
-    salt: String,
-    password: String,
-    createdOn: Date
+    firstName           : String,
+    lastName            : String,
+    phone               : String,
+    salt                : String,
+    password            : String,
+    isActive            :   Boolean,
+    createdBy           :   String,
+    createdAt           :   Number,
+    updatedBy           :   String,
+    updatedAt           :   Number
 });
 
 /**
@@ -28,15 +32,21 @@ userSchema.methods.verifyDuplicateUser = function(phone, req, res, next) {
  **/
 userSchema.methods.saveUserDetails = function(validatorResponse, req, res, next) {
     let secretString = crypto.randomBytes(16).toString('hex');
+    let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
+
     let userDetails = {
         firstName: validatorResponse.firstName,
         lastName: validatorResponse.lastName,
         phone: validatorResponse.phone,
         salt: secretString,
         password: crypto.pbkdf2Sync(validatorResponse.password, secretString, 1000, 32, 'sha256').toString('hex'),
-        createdOn: new Date()
+        isActive        :   true,
+        createdBy       :   "System",
+        createdAt       :   currentTime,
+        updatedBy       :   "System",
+        updatedAt       :   currentTime
     }
-    users.update({ phone: validatorResponse.phone }, { $set: userDetails }, { upsert: true }, function(err, data) {
+    users.update({ phone: validatorResponse.phone, isActive : true}, { $set: userDetails }, { upsert: true }, function(err, data) {
         if (err) {
             	console.log(err);
 		res.status(500).json({ status: 'error', message: 'Internal server error' });
@@ -51,7 +61,7 @@ userSchema.methods.saveUserDetails = function(validatorResponse, req, res, next)
  * This model method is used for to get login user details
  */
 userSchema.methods.getUserDetails = function(phone, req, res, next) {
-    users.findOne({ phone: phone }, function(err, response) {
+    users.findOne({ phone: phone, isActive : true }, function(err, response) {
         if (response) {
             next(null, response._doc);
         } else {

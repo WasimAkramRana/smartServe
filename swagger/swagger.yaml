@@ -6,7 +6,7 @@ info:
   contact:
     name: Smart Serve
     url: 'https://www.mobileprogramming.com/'
-host: '104.211.74.123:3090'
+host: 'localhost:3090'
 basePath: /
 schemes:
   - http
@@ -97,6 +97,8 @@ paths:
       operationId: getRestaurant
       produces:
         - application/json
+      security:
+        - JWT: []
       responses:
         '200':
           description: Success
