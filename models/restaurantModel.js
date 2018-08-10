@@ -53,7 +53,7 @@ restaurantSchema.methods.exists = function (req,res,next)
 /**
  * This function add restaurant if already exits with same name then update records.
  */
-restaurantSchema.methods.save = function (req,res,next)
+restaurantSchema.methods.saveData = function (req,res,next)
 {
     let currentTime = (new Date()).getTime();
     let restaurantDetails = {
@@ -89,7 +89,7 @@ restaurantSchema.methods.save = function (req,res,next)
  * This function is return all restaurant avaliable.
  */
 restaurantSchema.methods.getAll = function(req,res,next){
-    restaurants.find({isActive : false}, function(err, response) {
+    restaurants.find({isActive : true}, function(err, response) {
         if(response) {
           next(null, response)
         } else {

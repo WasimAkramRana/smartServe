@@ -27,10 +27,10 @@ module.exports = {
                 res.status(200).json({status : 'success', message : 'Restaurant found.',data:results}); //Send API request response
         })
     },
-    'save': function(req,res,next){
+    'saveData': function(req,res,next){
         async.series([
             function(next) {
-            restaurants.save(req,res,next);
+            restaurants.saveData(req,res,next);
             }
         ],function(err, results) {
             if(err)
