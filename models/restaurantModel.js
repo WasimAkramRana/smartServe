@@ -1,6 +1,5 @@
 var mongoose        =   require('mongoose');
 var dbConnection    =   require('./dbConnection');
-
 var SchemaTypes = mongoose.SchemaTypes;
 
 var restaurantSchema  = dbConnection.Schema({
@@ -53,9 +52,9 @@ restaurantSchema.methods.exists = function (req,res,next)
 /**
  * This function add restaurant if already exits with same name then update records.
  */
-restaurantSchema.methods.saveData = function (req,res,next)
+restaurantSchema.methods.saveRestaurant = function (req,res,next)
 {
-    let currentTime = (new Date()).getTime();
+    let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
     let restaurantDetails = {
         name            :   req.body.name,
         serviceTaxNo    :   req.body.serviceTaxNo,
@@ -99,29 +98,84 @@ restaurantSchema.methods.getAll = function(req,res,next){
 }
 
 /**
- * This function help to search products in particuar restaurant
+ * This function is used to delete active restaurant
  * @param {*} restaurantId is restaurant system generated Id
- * @param {*} searchOptions in this object user can pass filter parameter 
- * E.g. searchOptions: {veg: true, name: <item name>}
  */
-restaurantSchema.methods.searchProduct = function(restaurantId,searchOptions,req,res,next){
-    let findQuery = { _id :   restaurantId, isActive : true }
-
-    //Veg / Non Veg Search Options
-    if(searchOptions.veg != undefined)
-        findQuery['products.veg'] = searchOptions.veg
-
-    //Name Search Options
-    if(searchOptions.name != undefined)
-        findQuery['products.name'] = searchOptions.name
-
-    restaurants.find(findQuery,{_id : 0 , products : 1}, function(err, response) {
+restaurantSchema.methods.deleteRestaurant = function(restaurantId,req,res,next){
+    let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
+    restaurants.updateOne({_id : restaurantId, isActive : true},{
+        $set : {
+        isActive    : false,
+        updatedBy   : "System",
+        updatedAt   : currentTime
+        }
+    },
+    {new: true},
+    function(err, response) {
         if(response) {
-          next(null, response._doc)
+          next(null, response)
         } else {
-          res.status(409).json({status: 'error', message: 'No matching product found.'});
+          res.status(409).json({status: 'error', message: 'Restaurant does not exist.'});
         }
       });
+}
+/**
+ * This function help to search products in particuar restaurant
+ * @param {*} restaurantId is restaurant system generated Id
+ * E.g. filter options in query: veg: true, name: <item name>
+ */
+restaurantSchema.methods.getProducts = function(restaurantId,req,res,next){
+    let findQuery = { _id :mongoose.Types.ObjectId(restaurantId), isActive : true };
+
+    let filterOptions = "";
+
+    //Veg / Non Veg Search Options
+    if(req.query.veg != undefined)
+        filterOptions = {'$eq':["$$product.veg",req.query.veg.toLowerCase() === "true" ? true : false]};
+
+    //Name Search Options
+    if(req.query.name != undefined){
+        
+        if(filterOptions != "") {
+            filterOptions = {$and:[
+                filterOptions,
+                {'$eq':["$$product.name",req.query.name.trim()]}
+                  ]}
+        }
+        else{
+            filterOptions = {'$eq':["$$product.name",req.query.name.trim()]};
+        }
+    }
+      
+    if(filterOptions != ""){
+        filterOptions =
+                {"products":{
+                        $filter:{
+                            input:"$products",
+                            as:	"product",
+                            cond:filterOptions
+                        }
+                    }
+                }
+      }
+
+    let projection = {"_id":1,name:1,"products":1};
+    
+    if(filterOptions != "")
+        var finalQuery = [{$match: findQuery},{$addFields: filterOptions},{$project: projection}];
+    else
+        var finalQuery = [{$match:findQuery},{$project:projection}];
+
+    restaurants.aggregate(finalQuery,
+        function(err, response) {
+            if(response) {
+            next(null, response);
+            } else {
+                res.status(409).json({status: 'error', message: 'No Product found.'});
+            }
+        }
+    );
+
 }
 
 let restaurants  = dbConnection.smartServeDB.model('restaurants', restaurantSchema);

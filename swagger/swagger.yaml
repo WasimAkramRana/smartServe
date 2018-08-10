@@ -1,0 +1,262 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Smart Serve
+  description: Smart Serve API Documents
+  contact:
+    name: Smart Serve
+    url: 'https://www.mobileprogramming.com/'
+host: '104.211.74.123:3090'
+basePath: /
+schemes:
+  - http
+  - https
+securityDefinitions:
+  JWT:
+    type: apiKey
+    name: x-access-token
+    in: header
+    description: Enter valid API authorization token
+tags:
+  - name: User Controller
+    description: API to manage users.
+  - name: Restaurant Controller
+    description: API to manage Restaurant
+  - name: Server Endpoint
+    description: Check server running status
+paths:
+  /user/signup:
+    post:
+      tags:
+        - User Controller
+      summary: This api is used add new user
+      operationId: userSignup
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: firstName
+          in: formData
+          type: string
+          required: true
+        - name: lastName
+          in: formData
+          type: string
+          required: true
+        - name: phone
+          in: formData
+          type: string
+          required: true
+        - name: password
+          in: formData
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /user/login:
+    post:
+      tags:
+        - User Controller
+      summary: This api is used login and get JWT token
+      operationId: userLogin
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: phone
+          in: formData
+          type: string
+          required: true
+        - name: password
+          in: formData
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /restaurant:
+    get:
+      tags:
+        - Restaurant Controller
+      summary: This API return list of restaurants
+      operationId: getRestaurant
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+    post:
+      tags:
+        - Restaurant Controller
+      summary: This API is used to add / update exits restaurant
+      operationId: addRestaurant
+      produces:
+        - application/json
+      consumes:
+        - application/x-www-form-urlencoded
+      parameters:
+        - name: restaurant
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Restaurant'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/restaurant/{restaurantId}':
+    delete:
+      tags:
+        - Restaurant Controller
+      summary: This API delete particular restaurant
+      operationId: deleteRestaurant
+      produces:
+        - application/json
+      parameters:
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/restaurant/{restaurantId}/products':
+    get:
+      tags:
+        - Restaurant Controller
+      summary: This API return products list of particlar restaurant
+      operationId: getProducts
+      produces:
+        - application/json
+      parameters:
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+        - name: veg
+          in: query
+          type: boolean
+        - name: name
+          in: query
+          type: string
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  /:
+    get:
+      tags:
+        - Server Endpoint
+      summary: This api is used to check server is running or not
+      operationId: serverRunning
+      produces:
+        - text/plain
+      responses:
+        default:
+          description: Return server running status.
+definitions:
+  SuccessResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: success
+      message:
+        type: string
+        example: Successfully job done.
+      data:
+        type: object
+        description: Required result object or array of data.
+  ErrorResponse:
+    type: object
+    properties:
+      status:
+        type: string
+        example: error
+      message:
+        type: string
+        description: Error message.
+        example: Network error found. Please try after some time.
+  Restaurant:
+    type: object
+    properties:
+      name:
+        type: string
+      serviceTaxNo:
+        type: string
+      CSTNo:
+        type: string
+      SGSTNo:
+        type: string
+      location:
+        type: string
+      contactPerson:
+        type: string
+      mobile:
+        type: string
+      products:
+        type: array
+        items:
+          type: object
+          properties:
+            name:
+              type: string
+            imageUrl:
+              type: string
+            veg:
+              type: boolean
+            unit:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  price:
+                    type: number
+                  offerPrice:
+                    type: number
+            tables:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string

@@ -10,10 +10,10 @@ module.exports = {
             }
         ],function(err, results) {
             if(err)
-                res.status(200).json({status : 'error', message : err}); //Send API request response
+                res.status(409).json({status : 'error', message : err}); 
             else
-                res.status(200).json({status : 'success', message : results[0].length +' Restaurant found.',data:results[0]}); //Send API request response
-        })
+                res.status(200).json({status : 'success', message : results[0].length +' Restaurant found.',data:results[0]});
+        });
     },
     'exists': function(req,res,next){
         async.series([
@@ -22,27 +22,58 @@ module.exports = {
             }
         ],function(err, results) {
             if(err)
-                res.status(200).json({status : 'error', message : err}); //Send API request response
+                res.status(409).json({status : 'error', message : err});
             else
-                res.status(200).json({status : 'success', message : 'Restaurant found.',data:results}); //Send API request response
-        })
+                res.status(200).json({status : 'success', message : 'Restaurant found.',data:results});
+        });
     },
-    'saveData': function(req,res,next){
+    'saveRestaurant': function(req, res, next){
         async.series([
             function(next) {
-            restaurants.saveData(req,res,next);
+            restaurants.saveRestaurant(req,res,next);
             }
         ],function(err, results) {
             if(err)
-                res.status(200).json({status : 'error', message : err}); //Send API request response
+                res.status(409).json({status : 'error', message : err});
             else
             {
                 let messageText = 'Congratulations! Successfully added.'
+
                 if(!results[0].upserted)
-                messageText = 'Congratulations! Successfully updated.'
-                res.status(200).json({status : 'success', message : messageText}); //Send API request response
+                    messageText = 'Congratulations! Successfully updated.'
+
+                res.status(200).json({status : 'success', message : messageText});
             }
-                
-        })
+        });
+    },
+    'deleteRestaurant': function(req, res, next){
+        var restaurantId = req.params.restaurantId;
+        async.series([
+            function(next) {
+            restaurants.deleteRestaurant(restaurantId,req,res,next);
+            }
+        ],function(err, results) {
+            if(err)
+                res.status(409).json({status : 'error', message : err});
+            else{
+                  if(results[0].nModified > 0)
+                        res.status(200).json({status : 'success', message :'Congratulations! restaurant successfully deleted.'});
+                    else
+                        res.status(409).json({status : 'error', message : "No active restaurant found for delete."});
+            }
+        });
+    },
+    'getProducts' :function(req, res, next){
+        var restaurantId = req.params.restaurantId;
+        async.series([
+            function(next) {
+            restaurants.getProducts(restaurantId, req, res, next);
+            }
+        ],function(err, results) {
+            if(err)
+                res.status(200).json({status : 'error', message : err});
+            else 
+                res.status(200).json({status : 'success', message : results[0][0].products.length +" products found.", data: results[0][0]});
+        });
     }
 }

@@ -7,6 +7,9 @@ var expressValidator    = require('express-validator');
 var bunyan              = require('bunyan');
 var bunyanMiddleware    = require('bunyan-middleware');
 const fs                = require('fs');
+var swaggerUi           = require('swagger-ui-express');
+const YAML              = require('yamljs');
+const swaggerDoc        = YAML.load('./swagger/swagger.yaml');
 global.configs          = require('./config/configs.json');
 var bunyanLogger        = bunyan.createLogger({name:global.configs.appName, streams: [{path: global.configs.logsPath}]});
 
@@ -48,7 +51,13 @@ app.get("/",function(req,res,next){
 });
 
 app.use('/restaurant',   require('./routes/restaurant.js')); //Call all user API routes
-app.use('/',             require('./routes/users.js')); //Call all user API routes
+app.use('/user',         require('./routes/users.js')); //Call all user API routes
+
+/**
+* Swagger document API
+*/
+app.use('/swagger',swaggerUi.serve, swaggerUi.setup(swaggerDoc));
+
 
 /**
 * Application running on given port
