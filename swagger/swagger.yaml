@@ -115,42 +115,11 @@ paths:
       operationId: addRestaurant
       produces:
         - application/json
-      consumes:
-        - multipart/form-data
       parameters:
-        - name: name
-          in: formData
-          type: string
-          required: true
-        - name: serviceTaxNo
-          in: formData
-          type: string
-          required: true
-        - name: CSTNo
-          in: formData
-          type: string
-          required: true
-        - name: SGSTNo
-          in: formData
-          type: string
-          required: true
-        - name: location
-          in: formData
-          type: string
-          required: true
-        - name: contactPerson
-          in: formData
-          type: string
-          required: true
-        - name: mobile
-          in: formData
-          type: string
-          required: true
-        - name: tables
-          in: formData
-          type: array
-          items:
-            type: string
+        - name: Restaurant
+          in: body
+          schema:
+            $ref: '#/definitions/Restaurant'
           required: true
       responses:
         '200':
@@ -300,6 +269,27 @@ definitions:
         type: string
         description: Error message.
         example: Network error found. Please try after some time.
+  Restaurant:
+    type: object
+    properties:
+        name: 
+          type: string
+        serviceTaxNo: 
+          type: string
+        CSTNo: 
+          type: string
+        SGSTNo: 
+          type: string
+        location: 
+          type: string
+        contactPerson: 
+          type: string
+        mobile: 
+          type: string
+        tables: 
+          type: array
+          items:
+            type: string
   Products:
     type: object
     properties:
