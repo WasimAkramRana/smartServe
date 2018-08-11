@@ -6,9 +6,9 @@ var restaurants         =   new restaurantModel();
 module.exports = {
     'getAll': function(req,res,next){
         async.series([
-            function(next) {
+            /* function(next) {
                 globalServices.validateAccessToken(req, res, next); //Validate access token
-            },
+            }, */
             function(next){
                 restaurants.getAll(req,res,next);
             }
@@ -16,7 +16,7 @@ module.exports = {
             if(err)
                 res.status(409).json({status : 'error', message : err}); 
             else
-                res.status(200).json({status : 'success', message : results[0].length +' Restaurant found.',data:results[0]});
+                res.status(200).json({status : 'success', message : results.length +' Restaurant found.',data : results});
         });
     },
     'exists': function(req,res,next){
@@ -28,7 +28,7 @@ module.exports = {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-                res.status(200).json({status : 'success', message : 'Restaurant found.',data:results});
+                res.status(200).json({status : 'success', message : 'Restaurant found.',data:  results});
         });
     },
     'saveRestaurant': function(req, res, next){

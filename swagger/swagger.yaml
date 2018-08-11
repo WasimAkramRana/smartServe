@@ -5,8 +5,8 @@ info:
   description: Smart Serve API Documents
   contact:
     name: Smart Serve
-    url: 'https://www.mobileprogramming.com/'
-host: 'localhost:3090'
+    url: 'https://github.com/WasimAkramRana/smartServe.git'
+host: '104.211.74.123:3090'
 basePath: /
 schemes:
   - http
@@ -22,6 +22,8 @@ tags:
     description: API to manage users.
   - name: Restaurant Controller
     description: API to manage Restaurant
+  - name: Product Controller
+    description: API to manage Products of Restaurant
   - name: Server Endpoint
     description: Check server running status
 paths:
@@ -97,8 +99,6 @@ paths:
       operationId: getRestaurant
       produces:
         - application/json
-      security:
-        - JWT: []
       responses:
         '200':
           description: Success
@@ -116,13 +116,42 @@ paths:
       produces:
         - application/json
       consumes:
-        - application/x-www-form-urlencoded
+        - multipart/form-data
       parameters:
-        - name: restaurant
-          in: body
+        - name: name
+          in: formData
+          type: string
           required: true
-          schema:
-            $ref: '#/definitions/Restaurant'
+        - name: serviceTaxNo
+          in: formData
+          type: string
+          required: true
+        - name: CSTNo
+          in: formData
+          type: string
+          required: true
+        - name: SGSTNo
+          in: formData
+          type: string
+          required: true
+        - name: location
+          in: formData
+          type: string
+          required: true
+        - name: contactPerson
+          in: formData
+          type: string
+          required: true
+        - name: mobile
+          in: formData
+          type: string
+          required: true
+        - name: tables
+          in: formData
+          type: array
+          items:
+            type: string
+          required: true
       responses:
         '200':
           description: Success
@@ -154,11 +183,25 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  '/restaurant/{restaurantId}/products':
+  /:
     get:
       tags:
-        - Restaurant Controller
-      summary: This API return products list of particlar restaurant
+        - Server Endpoint
+      summary: This api is used to check server is running or not
+      operationId: serverRunning
+      produces:
+        - text/plain
+      responses:
+        default:
+          description: Return server running status.
+  '/product/{restaurantId}':
+    get:
+      tags:
+        - Product Controller
+      summary: This API get products of particular restaurant with search options
+      description: >-
+        isVeg (true / false) and name (Product Name) is optional parameter to
+        search products
       operationId: getProducts
       produces:
         - application/json
@@ -167,7 +210,7 @@ paths:
           in: path
           type: string
           required: true
-        - name: veg
+        - name: isVeg
           in: query
           type: boolean
         - name: name
@@ -182,17 +225,58 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
-  /:
-    get:
+    post:
       tags:
-        - Server Endpoint
-      summary: This api is used to check server is running or not
-      operationId: serverRunning
+        - Product Controller
+      summary: This API is used to add new product in particular restaurant
+      operationId: addProduct
       produces:
-        - text/plain
+        - application/json
+      parameters:
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+        - name: products
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Products'
       responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
         default:
-          description: Return server running status.
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+  '/product/{restaurantId}/{productId}':
+    delete:
+      tags:
+        - Product Controller
+      summary: This API delete particular product of particular restaurant
+      operationId: deleteProducts
+      produces:
+        - application/json
+      parameters:
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+        - name: productId
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
 definitions:
   SuccessResponse:
     type: object
@@ -216,49 +300,25 @@ definitions:
         type: string
         description: Error message.
         example: Network error found. Please try after some time.
-  Restaurant:
+  Products:
     type: object
     properties:
       name:
         type: string
-      serviceTaxNo:
+      imageUrl:
         type: string
-      CSTNo:
+      isVeg:
+        type: boolean
+      details:
         type: string
-      SGSTNo:
-        type: string
-      location:
-        type: string
-      contactPerson:
-        type: string
-      mobile:
-        type: string
-      products:
+      unit:
         type: array
         items:
           type: object
           properties:
             name:
               type: string
-            imageUrl:
-              type: string
-            veg:
-              type: boolean
-            unit:
-              type: array
-              items:
-                type: object
-                properties:
-                  name:
-                    type: string
-                  price:
-                    type: number
-                  offerPrice:
-                    type: number
-            tables:
-              type: array
-              items:
-                type: object
-                properties:
-                  name:
-                    type: string
+            price:
+              type: number
+            offerPrice:
+              type: number

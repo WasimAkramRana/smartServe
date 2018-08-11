@@ -33,3 +33,21 @@ db.getCollection("restaurants").aggregate([
 
 https://github.com/WasimAkramRana/smartServe.git
 https://github.com/WasimAkramRana/smartServe/tree/restaurant
+
+{
+        _id             :   SchemaTypes.ObjectId,
+        name            :   String,
+        imageUrl        :   String,
+        veg             :   Boolean,
+        unit            :   [{
+            _id         :   SchemaTypes.ObjectId,
+            name        :   String,
+            price       :   Number,
+            offerPrice  :   Number
+        }],
+        isAvaliable     :   Boolean,
+        detail          :   String
+    }
+
+http://mongoosejs.com/docs/api.html#query_Query-lean
+http://104.211.74.123:3090/swagger

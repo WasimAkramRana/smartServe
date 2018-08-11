@@ -11,24 +11,7 @@ var restaurantSchema  = dbConnection.Schema({
     location            :   String,
     contactPerson       :   String,
     mobile              :   String,
-    products            :   [{
-        _id             :   SchemaTypes.ObjectId,
-        name            :   String,
-        imageUrl        :   String,
-        veg             :   Boolean,
-        unit            :   [{
-            _id         :   SchemaTypes.ObjectId,
-            name        :   String,
-            price       :   Number,
-            offerPrice  :   Number
-        }],
-        isAvaliable     :   Boolean,
-        detail          :   String
-    }],
-    tables              :   [{
-        _id             :   SchemaTypes.ObjectId,
-        name            :   String
-    }],
+    tables              :   Array,
     isActive            :   Boolean,
     createdBy           :   String,
     createdAt           :   Number,
@@ -55,6 +38,7 @@ restaurantSchema.methods.exists = function (req,res,next)
 restaurantSchema.methods.saveRestaurant = function (req,res,next)
 {
     let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
+   
     let restaurantDetails = {
         name            :   req.body.name,
         serviceTaxNo    :   req.body.serviceTaxNo,
@@ -63,8 +47,7 @@ restaurantSchema.methods.saveRestaurant = function (req,res,next)
         location        :   req.body.location,
         contactPerson   :   req.body.contactPerson,
         mobile          :   req.body.mobile,
-        products        :   req.body.products,
-        tables          :   req.body.tables,
+        tables          :   Array.isArray(req.body.tables)?req.body.tables:req.body.tables.split(","),
         isActive        :   true,
         updatedBy       :   "System",
         updatedAt       :   currentTime
@@ -76,7 +59,7 @@ restaurantSchema.methods.saveRestaurant = function (req,res,next)
         restaurantDetails.createdAt =  currentTime;
     }
     restaurants.update({name : req.body.name, isActive : true},{$set : restaurantDetails}, {upsert:true}, function(err, response) {
-        if(response) {
+        if(!err ) {
           next(null, response)
         } else {
           res.status(409).json({status: 'error', message: 'Restaurant does not exist.'});
@@ -89,7 +72,7 @@ restaurantSchema.methods.saveRestaurant = function (req,res,next)
  */
 restaurantSchema.methods.getAll = function(req,res,next){
     restaurants.find({isActive : true}, function(err, response) {
-        if(response) {
+        if(!err && response.length > 0) {
           next(null, response)
         } else {
           res.status(409).json({status: 'error', message: 'Restaurant does not exist.'});
@@ -112,7 +95,7 @@ restaurantSchema.methods.deleteRestaurant = function(restaurantId,req,res,next){
     },
     {new: true},
     function(err, response) {
-        if(response) {
+        if(!err) {
           next(null, response)
         } else {
           res.status(409).json({status: 'error', message: 'Restaurant does not exist.'});
@@ -168,7 +151,7 @@ restaurantSchema.methods.getProducts = function(restaurantId,req,res,next){
 
     restaurants.aggregate(finalQuery,
         function(err, response) {
-            if(response) {
+            if(!err && response.length > 0 ) {
             next(null, response);
             } else {
                 res.status(409).json({status: 'error', message: 'No Product found.'});

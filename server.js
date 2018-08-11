@@ -50,8 +50,9 @@ app.get("/",function(req,res,next){
   res.send("Server is running");
 });
 
-app.use('/restaurant',   require('./routes/restaurant.js')); //Call all user API routes
-app.use('/user',         require('./routes/users.js')); //Call all user API routes
+app.use('/user',        require('./routes/users.js')); //Call all user API routes
+app.use('/restaurant',  require('./routes/restaurant.js')); //Call all user API routes
+app.use('/product',     require('./routes/product.js')); //Call all user API routes
 
 /**
 * Swagger document API
