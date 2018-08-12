@@ -22,20 +22,55 @@ var restaurantSchema  = dbConnection.Schema({
 /**
 * Validate that restaurant already exists with same name or not. 
 */
-restaurantSchema.methods.exists = function (req,res,next)
+restaurantSchema.methods.RestaurantExists = function (name,req,res,next)
 {
-    restaurants.findOne({name : req.query.name, isActive : true}, function(err, response) {
-        if(response) {
-          next(null, response._doc)
-        } else {
-            next('Restaurant does not exist.',null);
+    restaurants.findOne({name : name, isActive : true}, function(err, response) {
+        if(!err ) {
+            if(response.length > 0)
+                next(null, true);
+            else
+                next(null, false);
+          }else {
+            next('Some error found. Please try later.',null);
         }
       });
 }
 /**
  * This function add restaurant if already exits with same name then update records.
  */
-restaurantSchema.methods.saveRestaurant = function (req,res,next)
+restaurantSchema.methods.addRestaurant = function (req,res,next)
+{
+    let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
+   
+    let restaurantDetails = {
+        _id             :   new mongoose.Types.ObjectId(),
+        name            :   req.body.name,
+        serviceTaxNo    :   req.body.serviceTaxNo,
+        CSTNo           :   req.body.CSTNo,
+        SGSTNo          :   req.body.SGSTNo,
+        location        :   req.body.location,
+        contactPerson   :   req.body.contactPerson,
+        mobile          :   req.body.mobile,
+        tables          :   Array.isArray(req.body.tables)?req.body.tables:req.body.tables.split(","),
+        isActive        :   true,
+        createdBy       :   "System",
+        createdAt       :   currentTime,
+        updatedBy       :   "System",
+        updatedAt       :   currentTime
+    }
+
+    restaurants.create( restaurantDetails, function(err, response) {
+        if(!err ) {
+          next(null, response)
+        } else {
+          res.status(409).json({status: 'error', message: 'Restaurant does not exist.'});
+        }
+      });
+}
+/**
+ * This API is used to update exits restaurant 
+ */
+restaurantSchema.methods.updateRestaurant = function (req,res,next)
 {
     let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
    
@@ -53,12 +88,7 @@ restaurantSchema.methods.saveRestaurant = function (req,res,next)
         updatedAt       :   currentTime
     }
 
-    //Verfiy request type is for create or update.
-    if(!req.body._id){
-        restaurantDetails.createdBy = "System";
-        restaurantDetails.createdAt =  currentTime;
-    }
-    restaurants.update({name : req.body.name, isActive : true},{$set : restaurantDetails}, {upsert:true}, function(err, response) {
+    restaurants.update({name : restaurantDetails.name, isActive : true},{$set : restaurantDetails}, function(err, response) {
         if(!err ) {
           next(null, response)
         } else {

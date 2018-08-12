@@ -4,23 +4,52 @@ var productModel     =   require('../models/productModel');
 var products         =   new productModel();
 
 module.exports = {
-    'saveProduct': function(req, res, next){
-        async.series([
+    'productExists': function(req, res, next){
+        async.waterfall([
             function(next) {
-                products.saveProduct(req,res,next);
+                products.productExists(req.params.restaurantId,req.query.name,req,res,next);
             }
         ],function(err, results) {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-            {
-                let messageText = 'Congratulations! Successfully added.'
-
-                if(!results[0].upserted)
-                    messageText = 'Congratulations! Successfully updated.'
-
-                res.status(200).json({status : 'success', message : messageText});
+                res.status(200).json({status : 'success', message : results});
+        });
+    },
+    'addProduct': function(req, res, next){
+        async.waterfall([
+            function(next) {
+                products.productExists(req.params.restaurantId,req.body.name,req,res,next);
+            },
+            function(result, next) {
+                if(!result)
+                    products.addProduct(req,res,next);
+                else
+                    next("Product already exits",null);
             }
+        ],function(err, results) {
+            if(err)
+                res.status(409).json({status : 'error', message : err});
+            else
+                res.status(200).json({status : 'success', message : 'Congratulations! Successfully added.'});
+        });
+    },
+    'updateProduct': function(req, res, next){
+        async.waterfall([
+            function(next) {
+                products.productExists(req.params.restaurantId,req.body.name,req,res,next);
+            },
+            function(result, next) {
+                if(result)
+                    products.updateProduct(req,res,next);
+                else
+                    next("Product not found.",null);
+            }
+        ],function(err, results) {
+            if(err)
+                res.status(409).json({status : 'error', message : err});
+            else
+                res.status(200).json({status : 'success', message : 'Congratulations! Successfully updated.'});
         });
     },
     'getProduct': function(req, res, next){

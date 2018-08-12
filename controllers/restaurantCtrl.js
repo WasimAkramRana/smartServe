@@ -19,35 +19,52 @@ module.exports = {
                 res.status(200).json({status : 'success', message : results.length +' Restaurant found.',data : results});
         });
     },
-    'exists': function(req,res,next){
+    'RestaurantExists': function(req,res,next){
         async.series([
             function(next) {
-            restaurants.exists(req,res,next);
+            restaurants.RestaurantExists(req,res,next);
             }
         ],function(err, results) {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-                res.status(200).json({status : 'success', message : 'Restaurant found.',data:  results});
+                res.status(200).json({status : 'success', message : results});
         });
     },
-    'saveRestaurant': function(req, res, next){
-        async.series([
+    'addRestaurant': function(req, res, next){
+        async.waterfall([
             function(next) {
-            restaurants.saveRestaurant(req,res,next);
+                restaurants.RestaurantExists(req,res,next);
+            },
+            function(result, next) {
+                if(!result)
+                    restaurants.addRestaurant(req,res,next);
+                else
+                    next('Restaurant already exists.', null);
             }
         ],function(err, results) {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-            {
-                let messageText = 'Congratulations! Successfully added.'
-
-                if(!results[0].upserted)
-                    messageText = 'Congratulations! Successfully updated.'
-
-                res.status(200).json({status : 'success', message : messageText});
+                res.status(200).json({status : 'success', message : 'Congratulations! Successfully added.'});
+        });
+    },
+    'updateRestaurant': function(req, res, next){
+        async.waterfall([
+            function(next) {
+                restaurants.RestaurantExists(req,res,next);
+            },
+            function(result, next) {
+                if(result)
+                    restaurants.updateRestaurant(req,res,next);
+                else
+                    next('Restaurant not found.', null);
             }
+        ],function(err, results) {
+            if(err)
+                res.status(409).json({status : 'error', message : err});
+            else
+               res.status(200).json({status : 'success', message : 'Congratulations! Successfully updated.'});
         });
     },
     'deleteRestaurant': function(req, res, next){

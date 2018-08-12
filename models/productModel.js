@@ -1,6 +1,6 @@
 var mongoose        =   require('mongoose');
 var dbConnection    =   require('./dbConnection');
-var SchemaTypes = mongoose.SchemaTypes;
+var SchemaTypes     = mongoose.SchemaTypes;
 
 var productSchema  = dbConnection.Schema({
     _id                 :   SchemaTypes.ObjectId,
@@ -23,38 +23,77 @@ var productSchema  = dbConnection.Schema({
     updatedAt           :   Number
   });
 
-productSchema.methods.saveProduct = function(req,res,next){
+productSchema.methods.productExists = function(restaurantId,name,req, res, next){
+    restaurantId = mongoose.Types.ObjectId(restaurantId);
+
+    products.find({restaurant: restaurantId, name: name, isActive: true},function(err, response){
+        if(!err ) {
+            if(response.length > 0)
+                next(null, true);
+            else
+                next(null, false);
+          } else {
+            res.status(409).json({status: 'error', message: 'Some error found. Please try later.'});
+          }
+    });
+}
+
+productSchema.methods.addProduct = function(req,res,next){
 
     let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
-    
+    let restaurantId = mongoose.Types.ObjectId(req.params.restaurantId);
+
     let productDetails = {
-        restaurant  : mongoose.Types.ObjectId(req.params.restaurantId),
+        _id         : new mongoose.Types.ObjectId(),
+        restaurant  : restaurantId,
         name        : req.body.name,
         imageUrl    : req.body.imageUrl,
         isVeg       : req.body.isVeg,
         unit        : req.body.unit,
         detail      : req.body.detail,
+        isAvaliable : req.body.isAvaliable,
+        isActive    : true,
+        createdBy   : 'System',
+        createdAt   : currentTime,
         updatedBy   : 'System',
         updatedAt   : currentTime
     };
 
-    //Verfiy request type is for create or update.
-    if(!req.body._id){
-        productDetails.createdBy = "System";
-        productDetails.createdAt =  currentTime;
-    }
-    else
-        productDetails._id = mongoose.Types.ObjectId(req.body._id);
-
-    products.update({name : productDetails.name, isActive : true},{$set : productDetails}, {upsert:true}, function(err, response) {
+    products.create(productDetails, function(err, response) {
         if(!err ) {
-          next(null, response)
+          next(null, response);
         } else {
           res.status(409).json({status: 'error', message: 'Product does not exist.'});
-        }products
+        }
       });
 }
 
+productSchema.methods.updateProduct = function(req,res,next){
+
+    let currentTime = parseInt(((new Date()).getTime()/1000).toFixed());
+    let restaurantId = mongoose.Types.ObjectId(req.params.restaurantId);
+    let productId = mongoose.Types.ObjectId(req.params.productId);
+    
+    let productDetails = {
+        restaurant  : restaurantId,
+        name        : req.body.name,
+        imageUrl    : req.body.imageUrl,
+        isVeg       : req.body.isVeg,
+        unit        : req.body.unit,
+        detail      : req.body.detail,
+        isAvaliable : req.body.isAvaliable,
+        updatedBy   : 'System',
+        updatedAt   : currentTime
+    };
+
+products.update({restaurant  : productDetails.restaurantId, name: productDetails.name, isActive : true},{$set : productDetails},function(err, response) {
+        if(!err ) {
+          next(null, response);
+        } else {
+          res.status(409).json({status: 'error', message: 'Product does not exist.'});
+        }
+      });
+    }
 productSchema.methods.getProduct = function(req, res, next){
     let restaurantId = mongoose.Types.ObjectId(req.params.restaurantId);
 
@@ -68,6 +107,7 @@ productSchema.methods.getProduct = function(req, res, next){
  
     let findQuery = {restaurant: restaurantId, isActive : true};
     let isVeg = req.query.isVeg || req.query.isveg;
+    let isAvaliable = req.query.isAvaliable || req.query.isavaliable;
 
     if(isVeg != undefined)
         findQuery.isVeg = isVeg.toLowerCase() === "true" ? true : false;
@@ -75,7 +115,10 @@ productSchema.methods.getProduct = function(req, res, next){
     if(req.query.name != undefined)
         findQuery.name = req.query.name.trim();
 
-    products.find(findQuery,{name:1,imageUrl:1,isVeg:1,unit:1,detail:1},function(err, response){
+    if(isAvaliable != undefined)
+        findQuery.isAvaliable = isAvaliable.toLowerCase() === "true" ? true : false;
+
+    products.find(findQuery,{name:1, imageUrl:1, isVeg:1, unit:1, detail:1, isAvaliable:1},function(err, response){
         if(!err ) {
             next(null, response)
           } else {
