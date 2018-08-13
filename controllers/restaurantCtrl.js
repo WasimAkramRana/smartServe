@@ -28,7 +28,7 @@ module.exports = {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-                res.status(200).json({status : 'success', message : results[0]});
+                res.status(200).json({status : 'success', message : (results[0].length > 0 ? true : false)});
         });
     },
     'addRestaurant': function(req, res, next){
@@ -37,7 +37,7 @@ module.exports = {
                 restaurants.RestaurantExists(req.body.name, req, res, next);
             },
             function(result, next) {
-                if(!result)
+                if(result[0].length == 0)
                     restaurants.addRestaurant(req, res, next);
                 else
                     next('Restaurant already exists.', null);
@@ -55,7 +55,7 @@ module.exports = {
                 restaurants.RestaurantExists(req.body.name, req, res, next);
             },
             function(result, next) {
-                if(result)
+                if(result[0].length > 0 && result[0]._id.toString()  == req.params.restaurantId)
                     restaurants.updateRestaurant(req, res, next);
                 else
                     next('Restaurant not found.', null);

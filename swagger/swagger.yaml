@@ -111,7 +111,7 @@ paths:
     post:
       tags:
         - Restaurant Controller
-      summary: This API is used to add / update exits restaurant
+      summary: This API is used to add new restaurant
       operationId: addRestaurant
       produces:
         - application/json
@@ -131,6 +131,32 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
   '/restaurant/{restaurantId}':
+    put:
+      tags:
+        - Restaurant Controller
+      summary: This API is used update exits restaurant
+      operationId: updateRestaurant
+      produces:
+        - application/json
+      parameters:
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+        - name: Restaurant
+          in: body
+          schema:
+            $ref: '#/definitions/Restaurant'
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
     delete:
       tags:
         - Restaurant Controller
@@ -185,6 +211,9 @@ paths:
         - name: name
           in: query
           type: string
+        - name: isAvaliable
+          in: query
+          type: boolean
       responses:
         '200':
           description: Success
@@ -221,6 +250,36 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
   '/product/{restaurantId}/{productId}':
+    put:
+      tags:
+        - Product Controller
+      summary: This API is used to update product in particular restaurant
+      operationId: updateProduct
+      produces:
+        - application/json
+      parameters:
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+        - name: productId
+          in: path
+          type: string
+          required: true
+        - name: products
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Products'
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
     delete:
       tags:
         - Product Controller
@@ -272,24 +331,24 @@ definitions:
   Restaurant:
     type: object
     properties:
-        name: 
+      name:
+        type: string
+      serviceTaxNo:
+        type: string
+      CSTNo:
+        type: string
+      SGSTNo:
+        type: string
+      location:
+        type: string
+      contactPerson:
+        type: string
+      mobile:
+        type: string
+      tables:
+        type: array
+        items:
           type: string
-        serviceTaxNo: 
-          type: string
-        CSTNo: 
-          type: string
-        SGSTNo: 
-          type: string
-        location: 
-          type: string
-        contactPerson: 
-          type: string
-        mobile: 
-          type: string
-        tables: 
-          type: array
-          items:
-            type: string
   Products:
     type: object
     properties:

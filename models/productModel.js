@@ -28,10 +28,7 @@ productSchema.methods.productExists = function(restaurantId,name,req, res, next)
 
     products.find({restaurant: restaurantId, name: name, isActive: true},function(err, response){
         if(!err ) {
-            if(response.length > 0)
-                next(null, true);
-            else
-                next(null, false);
+            next(null, response);
           } else {
             res.status(409).json({status: 'error', message: 'Some error found. Please try later.'});
           }

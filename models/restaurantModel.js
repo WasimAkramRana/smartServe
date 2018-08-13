@@ -26,10 +26,7 @@ restaurantSchema.methods.RestaurantExists = function (name, req, res, next)
 {
     restaurants.find({name : name, isActive : true}, function(err, response) {
         if(!err ) {
-            if(response.length > 0)
-                next(null, true);
-            else
-                next(null, false);
+            next(null, response);
           }else {
             next('Some error found. Please try later.',null);
         }
