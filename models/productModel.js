@@ -26,7 +26,7 @@ var productSchema  = dbConnection.Schema({
 productSchema.methods.productExists = function(restaurantId,name,req, res, next){
     restaurantId = mongoose.Types.ObjectId(restaurantId);
 
-    products.findOne({restaurant: restaurantId, name: name, isActive: true},function(err, response){
+    products.findOne({restaurant: restaurantId, name: { $regex : new RegExp(name, "i") }, isActive: true},function(err, response){
         if(!err ) {
             next(null, response);
           } else {
