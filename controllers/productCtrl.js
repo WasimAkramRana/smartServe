@@ -13,7 +13,7 @@ module.exports = {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-                res.status(200).json({status : 'success', message : (results[0].length > 0 ? true: false)});
+                res.status(200).json({status : 'success', message : (results != null ? true: false)});
         });
     },
     'addProduct': function(req, res, next){
@@ -22,7 +22,7 @@ module.exports = {
                 products.productExists(req.params.restaurantId,req.body.name,req,res,next);
             },
             function(result, next) {
-                if(result[0].length == 0)
+                if(result === null)
                     products.addProduct(req,res,next);
                 else
                     next("Product already exits",null);
@@ -40,7 +40,7 @@ module.exports = {
                 products.productExists(req.params.restaurantId,req.body.name,req,res,next);
             },
             function(result, next) {
-                if(result[0].length > 0 && result[0]._id.toString() == req.params.productId)
+                if(result != null && result._doc._id.toString() == req.params.productId)
                     products.updateProduct(req,res,next);
                 else
                     next("Product not found.",null);

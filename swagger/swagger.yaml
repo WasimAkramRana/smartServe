@@ -91,6 +91,28 @@ paths:
           description: Error
           schema:
             $ref: '#/definitions/ErrorResponse'
+  /restaurant/exists:
+    get:
+      tags: 
+        - Restaurant Controller
+      summary: This API is used to verify that restaurant name already exists or not
+      operationId: restaurantExists
+      produces:
+        - application/json
+      parameters: 
+        - name: name
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   /restaurant:
     get:
       tags:
@@ -189,6 +211,32 @@ paths:
       responses:
         default:
           description: Return server running status.
+  /product/{restaurantId}/exists:
+    get:
+      tags: 
+        - Product Controller
+      summary: This API is used to verify that product name already exists or not
+      operationId: productExists
+      produces:
+        - application/json
+      parameters: 
+        - name: restaurantId
+          in: path
+          type: string
+          required: true
+        - name: name
+          in: query
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Success
+          schema:
+            $ref: '#/definitions/SuccessResponse'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/ErrorResponse'
   '/product/{restaurantId}':
     get:
       tags:
@@ -360,6 +408,8 @@ definitions:
         type: boolean
       details:
         type: string
+      isAvaliable:
+        type: boolean
       unit:
         type: array
         items:

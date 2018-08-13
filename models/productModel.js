@@ -26,7 +26,7 @@ var productSchema  = dbConnection.Schema({
 productSchema.methods.productExists = function(restaurantId,name,req, res, next){
     restaurantId = mongoose.Types.ObjectId(restaurantId);
 
-    products.find({restaurant: restaurantId, name: name, isActive: true},function(err, response){
+    products.findOne({restaurant: restaurantId, name: name, isActive: true},function(err, response){
         if(!err ) {
             next(null, response);
           } else {
@@ -83,7 +83,7 @@ productSchema.methods.updateProduct = function(req,res,next){
         updatedAt   : currentTime
     };
 
-products.update({restaurant  : productDetails.restaurantId, name: productDetails.name, isActive : true},{$set : productDetails},function(err, response) {
+products.update({_id: productId, restaurant  : productDetails.restaurantId, isActive : true},{$set : productDetails},function(err, response) {
         if(!err ) {
           next(null, response);
         } else {

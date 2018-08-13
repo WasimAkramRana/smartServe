@@ -24,7 +24,7 @@ var restaurantSchema  = dbConnection.Schema({
 */
 restaurantSchema.methods.RestaurantExists = function (name, req, res, next)
 {
-    restaurants.find({name : name, isActive : true}, function(err, response) {
+    restaurants.findOne({name : name, isActive : true}, function(err, response) {
         if(!err ) {
             next(null, response);
           }else {
