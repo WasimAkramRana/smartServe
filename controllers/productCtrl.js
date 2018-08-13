@@ -61,9 +61,7 @@ module.exports = {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-            {
                 res.status(200).json({status : 'success', message : results[0].length +' Product found.', data: results[0]});
-            }
         });
     },
     'deleteProduct': function(req, res, next){
@@ -75,9 +73,7 @@ module.exports = {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-            {
                 res.status(200).json({status : 'success', message : results[0].length +' Product found.', data: results[0]});
-            }
         });
     }
 }

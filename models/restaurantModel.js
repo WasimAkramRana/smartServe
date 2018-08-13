@@ -22,9 +22,9 @@ var restaurantSchema  = dbConnection.Schema({
 /**
 * Validate that restaurant already exists with same name or not. 
 */
-restaurantSchema.methods.RestaurantExists = function (name,req,res,next)
+restaurantSchema.methods.RestaurantExists = function (name, req, res, next)
 {
-    restaurants.findOne({name : name, isActive : true}, function(err, response) {
+    restaurants.find({name : name, isActive : true}, function(err, response) {
         if(!err ) {
             if(response.length > 0)
                 next(null, true);

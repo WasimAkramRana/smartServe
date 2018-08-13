@@ -19,26 +19,26 @@ module.exports = {
                 res.status(200).json({status : 'success', message : results.length +' Restaurant found.',data : results});
         });
     },
-    'RestaurantExists': function(req,res,next){
+    'RestaurantExists': function(req, res, next){
         async.series([
             function(next) {
-            restaurants.RestaurantExists(req,res,next);
+            restaurants.RestaurantExists(req.query.name, req,res,next);
             }
         ],function(err, results) {
             if(err)
                 res.status(409).json({status : 'error', message : err});
             else
-                res.status(200).json({status : 'success', message : results});
+                res.status(200).json({status : 'success', message : results[0]});
         });
     },
     'addRestaurant': function(req, res, next){
         async.waterfall([
             function(next) {
-                restaurants.RestaurantExists(req,res,next);
+                restaurants.RestaurantExists(req.body.name, req, res, next);
             },
             function(result, next) {
                 if(!result)
-                    restaurants.addRestaurant(req,res,next);
+                    restaurants.addRestaurant(req, res, next);
                 else
                     next('Restaurant already exists.', null);
             }
@@ -52,11 +52,11 @@ module.exports = {
     'updateRestaurant': function(req, res, next){
         async.waterfall([
             function(next) {
-                restaurants.RestaurantExists(req,res,next);
+                restaurants.RestaurantExists(req.body.name, req, res, next);
             },
             function(result, next) {
                 if(result)
-                    restaurants.updateRestaurant(req,res,next);
+                    restaurants.updateRestaurant(req, res, next);
                 else
                     next('Restaurant not found.', null);
             }
