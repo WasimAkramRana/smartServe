@@ -20,7 +20,7 @@ module.exports = {
         });
     },
     'RestaurantExists': function(req, res, next){
-        async.series([
+        async.waterfall([
             function(next) {
             restaurants.RestaurantExists(req.query.name, req,res,next);
             }
@@ -37,7 +37,7 @@ module.exports = {
                 restaurants.RestaurantExists(req.body.name, req, res, next);
             },
             function(result, next) {
-                if(results === null)
+                if(result === null)
                     restaurants.addRestaurant(req, res, next);
                 else
                     next('Restaurant already exists.', null);
@@ -55,7 +55,7 @@ module.exports = {
                 restaurants.RestaurantExists(req.body.name, req, res, next);
             },
             function(result, next) {
-                if(results != null && result._doc._id.toString()  == req.params.restaurantId)
+                if(result != null && result._doc._id.toString()  == req.params.restaurantId)
                     restaurants.updateRestaurant(req, res, next);
                 else
                     next('Restaurant not found.', null);
