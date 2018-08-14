@@ -14,7 +14,13 @@ module.exports.validateAccessToken = function(req, res, next) {
     req.currentUser = {};
 		jwt.verify(token, configs.secretKey, function(err, decoded) {
       if(decoded) {
-        req.currentUser.phone = decoded.phone;
+        let currentUser = {
+          Id: decoded.Id,
+          firstName:  decoded.firstName,
+          lastName:   decoded.lastName,
+          phone:      decoded.phone
+        };
+        req.currentUser = currentUser;
 				next();
 			} else {
 				return res.status(401).json({status : 'error', message : 'Invalid token'});
@@ -30,7 +36,8 @@ module.exports.validateAccessToken = function(req, res, next) {
 */
 module.exports.generateJwt = function(req, res) {
   return 'Bearer~' + jwt.sign({
-		phone     : req.userDetails.userDetails,
+    Id        : req.userDetails._id,
+		phone     : req.userDetails.phone,
 		firstName : req.userDetails.firstName,
     lastName  : req.userDetails.lastName,
     exp       : Date.now() + 1 * 1 * 60 * 60 * 1000

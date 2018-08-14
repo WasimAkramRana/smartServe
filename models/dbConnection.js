@@ -9,5 +9,5 @@ mongoose.connect(config.dbURI, { useNewUrlParser: true })
     console.log(error.message)
   })
 
-mongoose.takedaTryDB  = mongoose.createConnection(config.dbURI);
-module.exports        = mongoose;
+mongoose.smartServeDB   = mongoose.createConnection(config.dbURI);
+module.exports          = mongoose;
