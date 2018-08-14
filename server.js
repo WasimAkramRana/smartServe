@@ -1,5 +1,4 @@
 "use strict";
-<<<<<<< HEAD
 const express     	    = require('express');
 const app           	  = express();
 const bodyParser 	      = require('body-parser');
@@ -13,18 +12,6 @@ const YAML              = require('yamljs');
 const swaggerDoc        = YAML.load('./swagger/swagger.yaml');
 global.configs          = require('./config/configs.json');
 var bunyanLogger        = bunyan.createLogger({name:global.configs.appName, streams: [{path: global.configs.logsPath}]});
-=======
-const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
-const cors = require('cors');
-var expressValidator = require('express-validator');
-var bunyan = require('bunyan');
-var bunyanMiddleware = require('bunyan-middleware');
-const fs = require('fs');
-global.configs = require('./config/configs.json');
-var bunyanLogger = bunyan.createLogger({ name: global.configs.appName, streams: [{ path: global.configs.logsPath }] });
->>>>>>> d4eb1332272c7e61b24626e192281f6a7d848d32
 
 /**
  * This block of code is use for to configure application level middlewares
@@ -56,7 +43,6 @@ app.use(function(err, req, res, next) {
 });
 
 /**
-<<<<<<< HEAD
 * These middlewares is use for define module wise rounting
 */
 
@@ -73,11 +59,6 @@ app.use('/product',     require('./routes/product.js')); //Call all user API rou
 */
 app.use('/swagger',swaggerUi.serve, swaggerUi.setup(swaggerDoc));
 
-=======
- * These middlewares is use for define module wise rounting
- */
-app.use('/', require('./routes/users.js')); //Call all user API routes
->>>>>>> d4eb1332272c7e61b24626e192281f6a7d848d32
 
 /**
  * Application running on given port
