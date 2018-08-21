@@ -7,7 +7,7 @@ var productSchema  = dbConnection.Schema({
     restaurant          :   { type: SchemaTypes.ObjectId, ref: 'restaurants' },
     name                :   String,
     imageUrl            :   String,
-    isVeg                 :   Boolean,
+    isVeg               :   Boolean,
     unit                :   [{
             _id         :   SchemaTypes.ObjectId,
             name        :   String,
@@ -30,7 +30,7 @@ productSchema.methods.productExists = function(restaurantId,name,req, res, next)
         if(!err ) {
             next(null, response);
           } else {
-            res.status(409).json({status: 'error', message: 'Some error found. Please try later.'});
+            res.status(409).json({status: 'error', message: 'Product not found.'});
           }
     });
 }
@@ -60,7 +60,7 @@ productSchema.methods.addProduct = function(req,res,next){
         if(!err ) {
           next(null, response);
         } else {
-          res.status(409).json({status: 'error', message: 'Product does not exist.'});
+          res.status(409).json({status: 'error', message: 'Something went wrong please try again.'});
         }
       });
 }
